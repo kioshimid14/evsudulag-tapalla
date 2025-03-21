@@ -19,14 +19,32 @@ export class LoginComponent {
     });
   }
 
+  loginError = '';
   onSubmit() {
-    const { username, password } = this.loginForm.value;
 
-    if(this.userService.validateLogin(username, password))
-    {
-      this.router.navigate(['/project/detail']);
-    } else {
-      console.log('error');
-    }
+    this.userService.userLogin(this.loginForm.value).subscribe({
+      next: (data) => {
+        if (data?.user) {
+          this.router.navigate(['/project/dashboard']);
+          this.loginError = '';
+        }
+      },
+      error: (err) => {
+        if (err.status === 401) {
+          this.loginError = 'Invalid username or password.';
+        } else {
+          this.loginError = 'Something went wrong. Please try again.';
+        }
+      }
+    });
+
+    // const { username, password } = this.loginForm.value;
+
+    // if(this.userService.validateLogin(username, password))
+    // {
+    //   this.router.navigate(['/project/detail']);
+    // } else {
+    //   console.log('error');
+    // }
   }
 }
